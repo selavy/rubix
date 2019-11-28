@@ -32,43 +32,6 @@
       const YELLOW = 0xE0FF2E;
       const RED    = 0xFA1616;
 
-      const colors = [
-        [
-          WHITE, WHITE, WHITE,
-          WHITE, WHITE, WHITE,
-          WHITE, WHITE, WHITE,
-
-          // BLUE, RED, YELLOW,
-          // ORANGE, BLUE, GREEN,
-          // WHITE, GREEN, RED,
-        ],
-        [
-          BLUE, BLUE, BLUE,
-          BLUE, BLUE, BLUE,
-          BLUE, BLUE, BLUE,
-        ],
-        [
-          YELLOW, YELLOW, YELLOW,
-          YELLOW, YELLOW, YELLOW,
-          YELLOW, YELLOW, YELLOW,
-        ],
-        [
-          GREEN, GREEN, GREEN,
-          GREEN, GREEN, GREEN,
-          GREEN, GREEN, GREEN,
-        ],
-        [
-          RED, RED, RED,
-          RED, RED, RED,
-          RED, RED, RED,
-        ],
-        [
-          ORANGE, ORANGE, ORANGE,
-          ORANGE, ORANGE, ORANGE,
-          ORANGE, ORANGE, ORANGE,
-        ],
-      ];
-
       //              |************|
       //              |*U1**U2**U3*|
       //              |************|
@@ -93,10 +56,19 @@
 
       // Solved cube: UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
 
+      const colors = [
+        WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE,          // U
+        BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE,                   // R
+        YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, // F
+        GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN,          // D
+        RED, RED, RED, RED, RED, RED, RED, RED, RED,                            // L
+        ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, // B
+      ];
+
       const squareSize = 50;
       const spacerSize = 3;
       const faceSize = 3*squareSize + 2*spacerSize;
-      const origin = { x: -300, y: -100, z: 0 };
+      const origin = { x: -300, y: -50, z: 0 };
       const coords = [
         { x: 1, y:  1, z: 0 }, // U
         { x: 2, y:  0, z: 0 }, // R
@@ -124,13 +96,14 @@
         { x: 1, y: 1, z: 0 },
       ];
 
-      for (var faceIdx = 0; faceIdx < colors.length; faceIdx++) {
+      console.log(colors.length);
+
+      for (var faceIdx = 0; faceIdx < 6; faceIdx++) {
         for (var x = 0; x < 3; x++) {
           for (var y = 0; y < 3; y++) {
-            const i = y*3 + x;
             const pos = positions[faceIdx];
             const off = offsets[faceIdx];
-            const color = colors[faceIdx][i];
+            const color = colors[9*faceIdx + 3*y + x];
             const geo = new THREE.PlaneBufferGeometry(squareSize, squareSize);
             const mat = new THREE.MeshBasicMaterial({ color: color, side: THREE.FrontSide });
             const face = new THREE.Mesh(geo, mat);
