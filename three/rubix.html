@@ -12,70 +12,138 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script>
-      var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera(
         75,                                     // FOV -- degrees
         window.innerWidth / window.innerHeight, // Aspect Ratio
-        0.1,                                    // Near Clipping Plane
-        1000,                                   // Far Clipping Plane
+        1  ,                                    // Near Clipping Plane
+        10000,                                  // Far Clipping Plane
       );
+      camera.position.z = 500;
+      camera.position.x = 0;
+      camera.position.y = 0;
+
+      var scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xF0F0F0);
+
+      const ORANGE = 0xFF6414;
+      const BLUE   = 0x2914FF;
+      const WHITE  = 0xFFFFFF;
+      const GREEN  = 0x0FCD1D;
+      const YELLOW = 0xE0FF2E;
+      const RED    = 0xFA1616;
 
       const colors = [
-        0x00FF00,
-        0xFF0000,
-        0x0000FF,
-        0xFF00FF,
-        0x00FFFF,
-        0xFFFF00,
-      ];
-      const positions = [
-        { x: -2, y: 1 },
-        { x: -1, y: 1 },
-        { x: -2, y: 0 },
-      ];
-      const geometries = new Array();
-      const materials  = new Array();
-      const cubes      = new Array();
-      const group = new THREE.Group();
+        [
+          WHITE, WHITE, WHITE,
+          WHITE, WHITE, WHITE,
+          WHITE, WHITE, WHITE,
 
-      for (var i = 0; i < positions.length; i++) {
-        geometries.push(new THREE.BoxGeometry(1, 1, 1));
-        materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
-        cubes.push(new THREE.Mesh(geometries[i], materials[i]));
-        cubes[i].position.x = positions[i].x;
-        cubes[i].position.y = positions[i].y;
-        group.add(cubes[i]);
+          // BLUE, RED, YELLOW,
+          // ORANGE, BLUE, GREEN,
+          // WHITE, GREEN, RED,
+        ],
+        [
+          BLUE, BLUE, BLUE,
+          BLUE, BLUE, BLUE,
+          BLUE, BLUE, BLUE,
+        ],
+        [
+          YELLOW, YELLOW, YELLOW,
+          YELLOW, YELLOW, YELLOW,
+          YELLOW, YELLOW, YELLOW,
+        ],
+        [
+          GREEN, GREEN, GREEN,
+          GREEN, GREEN, GREEN,
+          GREEN, GREEN, GREEN,
+        ],
+        [
+          RED, RED, RED,
+          RED, RED, RED,
+          RED, RED, RED,
+        ],
+        [
+          ORANGE, ORANGE, ORANGE,
+          ORANGE, ORANGE, ORANGE,
+          ORANGE, ORANGE, ORANGE,
+        ],
+      ];
+
+      //              |************|
+      //              |*U1**U2**U3*|
+      //              |************|
+      //              |*U4**U5**U6*|
+      //              |************|
+      //              |*U7**U8**U9*|
+      //              |************|
+      //  ************|************|************|************
+      //  *L1**L2**L3*|*F1**F2**F3*|*R1**R2**R3*|*B1**B2**B3*
+      //  ************|************|************|************
+      //  *L4**L5**L6*|*F4**F5**F6*|*R4**R5**R6*|*B4**B5**B6*
+      //  ************|************|************|************
+      //  *L7**L8**L9*|*F7**F8**F9*|*R7**R8**R9*|*B7**B8**B9*
+      //  ************|************|************|************
+      //              |************|
+      //              |*D1**D2**D3*|
+      //              |************|
+      //              |*D4**D5**D6*|
+      //              |************|
+      //              |*D7**D8**D9*|
+      //              |************|
+
+      // Solved cube: UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
+
+      const squareSize = 50;
+      const spacerSize = 3;
+      const faceSize = 3*squareSize + 2*spacerSize;
+      const origin = { x: -300, y: -100, z: 0 };
+      const coords = [
+        { x: 1, y:  1, z: 0 }, // U
+        { x: 2, y:  0, z: 0 }, // R
+        { x: 1, y:  0, z: 0 }, // F
+        { x: 1, y: -1, z: 0 }, // D
+        { x: 0, y:  0, z: 0 }, // L
+        { x: 3, y:  0, z: 0 }, // B
+      ];
+      const positions = coords.map(({x, y, z}) => {
+        return {
+          x: origin.x + x*faceSize,
+          y: origin.y + y*faceSize,
+          z: origin.z + z*faceSize,
+        }
+      });
+      const offsets = [
+        { x: 1, y: 1, z: 0 },
+        { x: 1, y: 1, z: 0 },
+        { x: 1, y: 1, z: 0 },
+        { x: 1, y: 1, z: 0 },
+        { x: 1, y: 1, z: 0 },
+        { x: 1, y: 1, z: 0 },
+        { x: 1, y: 1, z: 0 },
+        { x: 1, y: 1, z: 0 },
+        { x: 1, y: 1, z: 0 },
+      ];
+
+      for (var faceIdx = 0; faceIdx < colors.length; faceIdx++) {
+        for (var x = 0; x < 3; x++) {
+          for (var y = 0; y < 3; y++) {
+            const i = y*3 + x;
+            const pos = positions[faceIdx];
+            const off = offsets[faceIdx];
+            const color = colors[faceIdx][i];
+            const geo = new THREE.PlaneBufferGeometry(squareSize, squareSize);
+            const mat = new THREE.MeshBasicMaterial({ color: color, side: THREE.FrontSide });
+            const face = new THREE.Mesh(geo, mat);
+            face.position.x = pos.x + x*off.x*(squareSize + spacerSize);
+            face.position.y = pos.y + y*off.y*(squareSize + spacerSize);
+            face.position.z = pos.z + y*off.z*(squareSize + spacerSize);
+            scene.add(face);
+          }
+        }
       }
 
-      // geometries.push(new THREE.BoxGeometry(1, 1, 1));
-      // materials.push(new THREE.MeshBasicMaterial({ color: colors[0] }));
-      // cubes.push(new THREE.Mesh(geometries[0], materials[0]));
-      // cubes[0].position.x = -2;
-      // cubes[0].position.y = 1;
-
-      // for (var i = 0; i < cubes.length; i++) {
-      //   scene.add(cubes[i]);
-      // }
-      scene.add(group);
-
-      // var geometry = new THREE.BoxGeometry(
-      //   1, // width
-      //   1, // height
-      //   1, // depth
-      //   // 3, // widthSegments
-      // );
-      // var material = new THREE.MeshBasicMaterial({
-      //   color: 0x00ff00,
-      // });
-      // var cube = new THREE.Mesh(geometry, material);
-      // cube.position.x = -2;
-      // cube.position.y = 1;
-      // scene.add(cube);
-
-      camera.position.z = 5;
-
       var renderer = new THREE.WebGLRenderer();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(window.innerWidth - 200, window.innerHeight - 200);
       document.body.appendChild(renderer.domElement);
 
       function animate() {
