@@ -8,11 +8,12 @@ static const struct
 {
     float x, y;
     float r, g, b;
-} vertices[3] =
+} vertices[4] =
 {
-    { -0.6f, -0.4f, 1.f, 0.f, 0.f },
-    {  0.6f, -0.4f, 0.f, 1.f, 0.f },
-    {   0.f,  0.6f, 0.f, 0.f, 1.f }
+    { -0.6f, -0.6f, 1.f, 0.f, 0.f },
+    {  0.6f, -0.6f, 0.f, 1.f, 0.f },
+    {  0.6f,  0.6f, 0.f, 0.f, 1.f },
+    { -0.6f,  0.6f, 1.f, 0.f, 1.f },
 };
 
 static const char* vertex_shader_text =
@@ -98,7 +99,7 @@ int main(int argc, char** argv)
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
         mat4x4_identity(m);
-        mat4x4_rotate_Z(m, m, (float) glfwGetTime());
+        // mat4x4_rotate_Z(m, m, (float) glfwGetTime());
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
         mat4x4_mul(mvp, p, m);
         glUseProgram(program);
