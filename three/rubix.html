@@ -56,18 +56,20 @@
 
       // Solved cube: UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
 
-      const colors = [
-        WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE,          // U
-        BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE,                   // R
-        YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, YELLOW, // F
-        GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN, GREEN,          // D
-        RED, RED, RED, RED, RED, RED, RED, RED, RED,                            // L
-        ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, ORANGE, // B
-      ];
+      const cubedesc = "DRLUUBFBRBLURRLRUBLRDDFDLFUFUFFDBRDUBRUFLLFDDBFLUBLRBD";
+      // const cubedesc = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
 
+      const colors = {
+        "U": WHITE,
+        "R": BLUE,
+        "F": YELLOW,
+        "D": GREEN,
+        "L": RED,
+        "B": ORANGE,
+      };
       const squareSize = 50;
       const spacerSize = 5;
-      const faceSize = 3*squareSize + 3*spacerSize;
+      const faceSize = 3*squareSize + 8*spacerSize;
       const origin = { x: -300, y: -50, z: 0 };
       const coords = [
         { x: 1, y:  1, z: 0 }, // U
@@ -96,14 +98,13 @@
         { x: 1, y: 1, z: 0 },
       ];
 
-      console.log(colors.length);
-
       for (var faceIdx = 0; faceIdx < 6; faceIdx++) {
         for (var x = 0; x < 3; x++) {
           for (var y = 0; y < 3; y++) {
+            const i = 9*faceIdx + 3*y + x;
             const pos = positions[faceIdx];
             const off = offsets[faceIdx];
-            const color = colors[9*faceIdx + 3*y + x];
+            const color = colors[cubedesc[i]];
             const geo = new THREE.PlaneBufferGeometry(squareSize, squareSize);
             const mat = new THREE.MeshBasicMaterial({ color: color, side: THREE.FrontSide });
             const face = new THREE.Mesh(geo, mat);
