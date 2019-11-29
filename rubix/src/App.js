@@ -56,13 +56,10 @@ class App extends React.Component {
         this.state = {
             startDesc: desc,
             moves: [],
-            cube: Cube.fromString(desc),
+            solver: Cube.fromString(desc),
             solverReady: false,
             solution: "D2 R' D' F2 B D R2 D2 R' F2 D' F2 U' B2 L2 U2 D R2 U".split(' '),
         };
-    }
-
-    buildScene = () => {
     }
 
     componentDidMount() {
@@ -79,8 +76,19 @@ class App extends React.Component {
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xF0F0F0);
 
-        const cube = this.state.cube;
-        const desc = cube.asString();
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth - 200, window.innerHeight - 200);
+        // document.body.appendChild(renderer.domElement);
+        this.mount.appendChild(renderer.domElement);
+
+        const faces = [
+            new THREE.Group(), new THREE.Group(), new THREE.Group(),
+            new THREE.Group(), new THREE.Group(), new THREE.Group(),
+            new THREE.Group(), new THREE.Group(), new THREE.Group(),
+        ];
+
+        const desc = this.state.solver.asString();
+
         for (let faceIdx = 0; faceIdx < 6; faceIdx++) {
             for (let x = 0; x < 3; x++) {
                 for (let y = 0; y < 3; y++) {
@@ -97,22 +105,27 @@ class App extends React.Component {
                     face.position.x = pos.x + x*off.x*(squareSize + spacerSize);
                     face.position.y = pos.y + y*off.y*(squareSize + spacerSize);
                     face.position.z = pos.z + y*off.z*(squareSize + spacerSize);
-                    scene.add(face);
+                    faces[faceIdx].add(face);
                 }
             }
         }
 
+        const cube = new THREE.Group();
+        faces.forEach(face => cube.add(face));
+        scene.add(cube);
 
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth - 200, window.innerHeight - 200);
-        // document.body.appendChild(renderer.domElement);
-        this.mount.appendChild(renderer.domElement);
-
-        function animate() {
+        const animate = () => {
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
         }
         animate();
+
+        setTimeout(() => {
+            console.log("timer expired!");
+            console.log(cube.children[0].children[0]);
+            cube.children[0].children[0].position.x += 500;
+            cube.children[0].children[0].material.setValues({ color: ORANGE });
+        }, 1000);
     }
 
     render() {
