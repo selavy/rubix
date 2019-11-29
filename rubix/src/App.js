@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import * as THREE from "three";
 import Cube from "cubejs";
+import { Button } from "react-bootstrap";
 
 const ORANGE = 0xFF6414;
 const BLUE   = 0x2914FF;
@@ -55,7 +56,7 @@ class App extends React.Component {
         const desc = "DRLUUBFBRBLURRLRUBLRDDFDLFUFUFFDBRDUBRUFLLFDDBFLUBLRBD";
         this.state = {
             startDesc: desc,
-            moves: [],
+            movenum: 0,
             solver: Cube.fromString(desc),
             solverReady: false,
             solution: "D2 R' D' F2 B D R2 D2 R' F2 D' F2 U' B2 L2 U2 D R2 U".split(' '),
@@ -114,23 +115,45 @@ class App extends React.Component {
         faces.forEach(face => cube.add(face));
         scene.add(cube);
 
+        this.setState({
+            faces: faces
+        });
+
         const animate = () => {
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
         }
         animate();
 
-        setTimeout(() => {
-            console.log("timer expired!");
-            console.log(cube.children[0].children[0]);
-            cube.children[0].children[0].position.x += 500;
-            cube.children[0].children[0].material.setValues({ color: ORANGE });
-        }, 1000);
+        // setTimeout(() => {
+        //     console.log("timer expired!");
+        //     console.log(cube.children[0].children[0]);
+        //     cube.children[0].children[0].position.x += 500;
+        //     cube.children[0].children[0].material.setValues({ color: ORANGE });
+        // }, 1000);
     }
 
+    onClick = () => {
+        console.log("onClick");
+        const { solver, movenum, solution } = this.state;
+        if (solver.isSolved()) {
+            console.log("Cube already solved");
+            return;
+        }
+
+        console.assert(movenum < solution.length);
+        solver.move(solution[movenum]);
+        this.setState((state, props) => ({ movenum: state.movenum + 1 }));
+    };
+
     render() {
+        console.log(this.state.movenum);
+        console.log(this.state.solver.asString());
         return (
-            <div ref={ref => (this.mount = ref)} />
+            <div className="App">
+                <div ref={ref => (this.mount = ref)} />
+                <Button onClick={this.onClick}>Next</Button>
+            </div>
         );
     }
 }
