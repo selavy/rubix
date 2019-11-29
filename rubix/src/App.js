@@ -17,6 +17,37 @@ const colors = {
     "L": RED,
     "B": ORANGE,
 };
+const squareSize = 50;
+const spacerSize = 5;
+const faceSize = 3*squareSize + 8*spacerSize;
+const origin = { x: -300, y: -50, z: 0 };
+const coords = [
+    { x: 1, y:  1, z: 0 }, // U
+    { x: 2, y:  0, z: 0 }, // R
+    { x: 1, y:  0, z: 0 }, // F
+    { x: 1, y: -1, z: 0 }, // D
+    { x: 0, y:  0, z: 0 }, // L
+    { x: 3, y:  0, z: 0 }, // B
+];
+const positions = coords.map(({x, y, z}) => {
+    return {
+        x: origin.x + x*faceSize,
+        y: origin.y + y*faceSize,
+        z: origin.z + z*faceSize,
+    }
+});
+const offsets = [
+    { x: 1, y: 1, z: 0 },
+    { x: 1, y: 1, z: 0 },
+    { x: 1, y: 1, z: 0 },
+    { x: 1, y: 1, z: 0 },
+    { x: 1, y: 1, z: 0 },
+    { x: 1, y: 1, z: 0 },
+    { x: 1, y: 1, z: 0 },
+    { x: 1, y: 1, z: 0 },
+    { x: 1, y: 1, z: 0 },
+];
+
 
 class App extends React.Component {
     constructor(props) {
@@ -31,8 +62,11 @@ class App extends React.Component {
         };
     }
 
-    async componentDidMount() {
-        var camera = new THREE.PerspectiveCamera(
+    buildScene = () => {
+    }
+
+    componentDidMount() {
+        const camera = new THREE.PerspectiveCamera(
             75,                                     // FOV -- degrees
             window.innerWidth / window.innerHeight, // Aspect Ratio
             1  ,                                    // Near Clipping Plane
@@ -42,45 +76,14 @@ class App extends React.Component {
         camera.position.x = 0;
         camera.position.y = 0;
 
-        var scene = new THREE.Scene();
+        const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xF0F0F0);
-
-        const squareSize = 50;
-        const spacerSize = 5;
-        const faceSize = 3*squareSize + 8*spacerSize;
-        const origin = { x: -300, y: -50, z: 0 };
-        const coords = [
-            { x: 1, y:  1, z: 0 }, // U
-            { x: 2, y:  0, z: 0 }, // R
-            { x: 1, y:  0, z: 0 }, // F
-            { x: 1, y: -1, z: 0 }, // D
-            { x: 0, y:  0, z: 0 }, // L
-            { x: 3, y:  0, z: 0 }, // B
-        ];
-        const positions = coords.map(({x, y, z}) => {
-            return {
-                x: origin.x + x*faceSize,
-                y: origin.y + y*faceSize,
-                z: origin.z + z*faceSize,
-            }
-        });
-        const offsets = [
-            { x: 1, y: 1, z: 0 },
-            { x: 1, y: 1, z: 0 },
-            { x: 1, y: 1, z: 0 },
-            { x: 1, y: 1, z: 0 },
-            { x: 1, y: 1, z: 0 },
-            { x: 1, y: 1, z: 0 },
-            { x: 1, y: 1, z: 0 },
-            { x: 1, y: 1, z: 0 },
-            { x: 1, y: 1, z: 0 },
-        ];
 
         const cube = this.state.cube;
         const desc = cube.asString();
-        for (var faceIdx = 0; faceIdx < 6; faceIdx++) {
-            for (var x = 0; x < 3; x++) {
-                for (var y = 0; y < 3; y++) {
+        for (let faceIdx = 0; faceIdx < 6; faceIdx++) {
+            for (let x = 0; x < 3; x++) {
+                for (let y = 0; y < 3; y++) {
                     const i = 9*faceIdx + 3*y + x;
                     const pos = positions[faceIdx];
                     const off = offsets[faceIdx];
@@ -100,7 +103,7 @@ class App extends React.Component {
         }
 
 
-        var renderer = new THREE.WebGLRenderer();
+        const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth - 200, window.innerHeight - 200);
         // document.body.appendChild(renderer.domElement);
         this.mount.appendChild(renderer.domElement);
