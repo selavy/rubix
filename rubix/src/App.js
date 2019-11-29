@@ -1,8 +1,13 @@
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import * as THREE from "three";
 import Cube from "cubejs";
-import { Button } from "react-bootstrap";
+import {
+    Button,
+    Container,
+    Row,
+} from "react-bootstrap";
 
 const ORANGE = 0xFF6414;
 const BLUE   = 0x2914FF;
@@ -18,10 +23,18 @@ const colors = {
     "L": RED,
     "B": ORANGE,
 };
+const colorNames = {
+    "U": "WHITE",
+    "R": "BLUE",
+    "F": "YELLOW",
+    "D": "GREEN",
+    "L": "RED",
+    "B": "ORANGE",
+};
 const squareSize = 50;
 const spacerSize = 5;
 const faceSize = 3*squareSize + 8*spacerSize;
-const origin = { x: -300, y: -50, z: 0 };
+const origin = { x: -325, y:  50, z: 0 };
 const coords = [
     { x: 1, y:  1, z: 0 }, // U
     { x: 2, y:  0, z: 0 }, // R
@@ -38,15 +51,15 @@ const positions = coords.map(({x, y, z}) => {
     }
 });
 const offsets = [
-    { x: 1, y: 1, z: 0 },
-    { x: 1, y: 1, z: 0 },
-    { x: 1, y: 1, z: 0 },
-    { x: 1, y: 1, z: 0 },
-    { x: 1, y: 1, z: 0 },
-    { x: 1, y: 1, z: 0 },
-    { x: 1, y: 1, z: 0 },
-    { x: 1, y: 1, z: 0 },
-    { x: 1, y: 1, z: 0 },
+    { x: 1, y: -1, z: 0 },
+    { x: 1, y: -1, z: 0 },
+    { x: 1, y: -1, z: 0 },
+    { x: 1, y: -1, z: 0 },
+    { x: 1, y: -1, z: 0 },
+    { x: 1, y: -1, z: 0 },
+    { x: 1, y: -1, z: 0 },
+    { x: 1, y: -1, z: 0 },
+    { x: 1, y: -1, z: 0 },
 ];
 
 
@@ -62,6 +75,22 @@ class App extends React.Component {
             solution: "D2 R' D' F2 B D R2 D2 R' F2 D' F2 U' B2 L2 U2 D R2 U".split(' '),
         };
     }
+
+    updateFaces = () => {
+        const { solver, faces } = this.state;
+        console.log(faces);
+        const desc = solver.asString();
+        console.assert(desc.length === 54); // (9 sqs per face) x (6 faces) = 54 sqs
+        for (let faceIdx = 0; faceIdx < 6; faceIdx++) {
+            for (let sqIdx = 0; sqIdx < 9; sqIdx++) {
+                const i = 9*faceIdx + sqIdx;
+                const color = colors[desc[i]];
+                const face = faces[faceIdx];
+                const square = face.children[sqIdx];
+                square.material.setValues({ color: color });
+            }
+        }
+    };
 
     componentDidMount() {
         const camera = new THREE.PerspectiveCamera(
@@ -91,8 +120,8 @@ class App extends React.Component {
         const desc = this.state.solver.asString();
 
         for (let faceIdx = 0; faceIdx < 6; faceIdx++) {
-            for (let x = 0; x < 3; x++) {
-                for (let y = 0; y < 3; y++) {
+            for (let y = 0; y < 3; y++) {
+                for (let x = 0; x < 3; x++) {
                     const i = 9*faceIdx + 3*y + x;
                     const pos = positions[faceIdx];
                     const off = offsets[faceIdx];
@@ -105,7 +134,7 @@ class App extends React.Component {
                     const face = new THREE.Mesh(geo, mat);
                     face.position.x = pos.x + x*off.x*(squareSize + spacerSize);
                     face.position.y = pos.y + y*off.y*(squareSize + spacerSize);
-                    face.position.z = pos.z + y*off.z*(squareSize + spacerSize);
+                    face.position.z = pos.z +   off.z*(squareSize + spacerSize);
                     faces[faceIdx].add(face);
                 }
             }
@@ -116,7 +145,7 @@ class App extends React.Component {
         scene.add(cube);
 
         this.setState({
-            faces: faces
+            faces: faces,
         });
 
         const animate = () => {
@@ -133,27 +162,62 @@ class App extends React.Component {
         // }, 1000);
     }
 
-    onClick = () => {
-        console.log("onClick");
+    onNext = () => {
         const { solver, movenum, solution } = this.state;
         if (solver.isSolved()) {
             console.log("Cube already solved");
             return;
         }
-
-        console.assert(movenum < solution.length);
+        console.log(0 <= movenum && movenum < solution.length);
         solver.move(solution[movenum]);
-        this.setState((state, props) => ({ movenum: state.movenum + 1 }));
+        // this.updateFaces();
+        this.setState(
+            (state, props) => ({ movenum: state.movenum + 1 }),
+            () => this.updateFaces()
+        );
     };
 
+    onBack = () => {
+        const { solver, movenum, solution, startDesc } = this.state;
+        if (movenum === 0) {
+            console.log("Already at first move");
+            return;
+        }
+        console.log(0 <= movenum && movenum < solution.length);
+        solver.init(Cube.fromString(startDesc));
+        for (let i = 0; i < movenum - 1; i++) {
+            solver.move(solution[i]);
+        }
+        // this.updateFaces();
+        this.setState(
+            (state, props) => ({ movenum: state.movenum - 1}),
+            () => this.updateFaces()
+        );
+    }
+
     render() {
-        console.log(this.state.movenum);
-        console.log(this.state.solver.asString());
+        const { solver } = this.state;
+        console.log(solver.asString());
+        const desc = solver.asString();
+        const long = desc.split('').map(c => colorNames[c][0]);
+
+        let longDesc = "";
+        for (var i = 0; i < 54; i++) {
+            if (i % 9 === 0 && i !== 0) {
+                longDesc += " | ";
+            }
+            longDesc += long[i];
+        }
+
         return (
-            <div className="App">
-                <div ref={ref => (this.mount = ref)} />
-                <Button onClick={this.onClick}>Next</Button>
-            </div>
+            <Container className="App" fluid>
+                <Row><div ref={ref => (this.mount = ref)} /></Row>
+                <Row>
+                    <Button onClick={this.onBack}>Back</Button>
+                    <Button onClick={this.onNext}>Next</Button>
+                </Row>
+                <Row>{longDesc}</Row>
+            </Container>
         );
     }
 }
