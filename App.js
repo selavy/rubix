@@ -1,28 +1,10 @@
 import React from 'react';
+import logo from './logo.svg';
 import './App.css';
 import * as THREE from "three";
-import Cube from "cubejs";
 
 class App extends React.Component {
-    // constructor(props) {
-    //     super(props);
-    //     this.state = { solverInitialized: false };
-    // }
-
-    async componentDidMount() {
-        // console.log("initializing cube solver...");
-        // await Cube.initSolver();
-        // console.log("finished initializing cube solver!");
-        // this.setState({ solverInitialized: true });
-
-        // {
-        //     const desc = "DRLUUBFBRBLURRLRUBLRDDFDLFUFUFFDBRDUBRUFLLFDDBFLUBLRBD";
-        //     const c = Cube.fromString(desc);
-        //     const solution = c.solve();
-        //     console.log("JS solution:");
-        //     console.log(solution);
-        // }
-
+    componentDidMount() {
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
         var renderer = new THREE.WebGLRenderer();
@@ -45,18 +27,6 @@ class App extends React.Component {
     }
 
     render() {
-        const desc = "DRLUUBFBRBLURRLRUBLRDDFDLFUFUFFDBRDUBRUFLLFDDBFLUBLRBD";
-        // const desc = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
-        const cube = Cube.fromString(desc);
-        console.log("BEFORE:");
-        console.log(cube.isSolved());
-        console.log(cube.asString());
-
-        cube.move("D2 R' D' F2 B D R2 D2 R' F2 D' F2 U' B2 L2 U2 D R2 U");
-        console.log("AFTER:");
-        console.log(cube.asString());
-        console.log(cube.isSolved());
-
         return (
             <div ref={ref => (this.mount = ref)} />
         );
