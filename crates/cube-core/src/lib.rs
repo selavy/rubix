@@ -10,11 +10,13 @@
 //! - The 18 outer-face turns of the Half-Turn Metric (`U D L R F B` × cw/2/ccw).
 //! - Standard [`moves`] notation parsing and formatting.
 //! - The 54-sticker [`facelet`] view and the orientation-independent win check.
+//! - Uniform random-state [`scramble`] generation (via the seedable [`rng`]).
 //!
 //! ## Not yet implemented
 //! - Wide turns, slice moves (`M E S`), and whole-cube rotations (`x y z`),
 //!   which need a spatial-orientation tracker on top of the fixed-center model.
-//! - Random-state scramble generation and the two-phase solver.
+//! - The two-phase solver (which will also produce the displayable scramble
+//!   *move sequence* by solving a random state and inverting it).
 //!
 //! ## Example
 //! ```
@@ -28,7 +30,10 @@
 pub mod cubie;
 pub mod facelet;
 pub mod moves;
+pub mod rng;
+pub mod scramble;
 
 pub use cubie::CubieCube;
 pub use facelet::Color;
 pub use moves::{Face, Move, Turn};
+pub use rng::SplitMix64;

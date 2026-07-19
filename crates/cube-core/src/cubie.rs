@@ -127,7 +127,7 @@ impl Default for CubieCube {
 }
 
 /// Parity (0 = even, 1 = odd) of a permutation, by counting inversions.
-fn permutation_parity(perm: &[u8]) -> u8 {
+pub(crate) fn permutation_parity(perm: &[u8]) -> u8 {
     let mut inversions = 0u32;
     for i in 0..perm.len() {
         for j in (i + 1)..perm.len() {
