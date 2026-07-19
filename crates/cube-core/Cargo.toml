@@ -1,0 +1,14 @@
+[package]
+name = "cube-core"
+version = "0.1.0"
+description = "Rubik's Cube state model, move engine, scramble, and solver core"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+# `cdylib` is added later when we wire up wasm-bindgen; `rlib` keeps it usable
+# as a normal Rust dependency (e.g. by the backend and by unit tests).
+crate-type = ["rlib"]
+
+[dependencies]
