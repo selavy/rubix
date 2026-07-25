@@ -16,6 +16,7 @@
 //! two-phase solver lands.
 
 use crate::cubie::{permutation_parity, CubieCube};
+use crate::moves::Move;
 use crate::rng::SplitMix64;
 
 impl CubieCube {
@@ -64,6 +65,23 @@ impl CubieCube {
     pub fn scramble_from_seed(seed: u64) -> CubieCube {
         CubieCube::random(&mut SplitMix64::new(seed))
     }
+
+    /// A scramble as both a state and the move sequence that produces it.
+    ///
+    /// Returns the same uniform random state as [`scramble_from_seed`], together
+    /// with a short move sequence that, applied to a solved cube, reaches that
+    /// state — obtained by solving the state and inverting the solution. This is
+    /// the displayable scramble notation (typically ~20 moves).
+    ///
+    /// [`scramble_from_seed`]: CubieCube::scramble_from_seed
+    pub fn scramble_with_sequence(seed: u64) -> (CubieCube, Vec<Move>) {
+        let state = CubieCube::scramble_from_seed(seed);
+        // `solve` returns moves that take `state` to solved; reversing and
+        // inverting them takes solved to `state`.
+        let solution = state.solve().expect("a legal random state is always solvable");
+        let sequence = solution.iter().rev().map(|m| m.inverse()).collect();
+        (state, sequence)
+    }
 }
 
 #[cfg(test)]
@@ -101,6 +119,20 @@ mod tests {
             // Compare the full state (~4.3e19 possibilities), not just the
             // 8-corner permutation, which would collide by birthday paradox.
             assert!(seen.insert((c.cp, c.co, c.ep, c.eo)), "state collision at seed {seed}");
+        }
+    }
+
+    #[test]
+    fn scramble_sequence_reproduces_the_state() {
+        // Applying the returned move sequence to a solved cube must land on the
+        // exact same state as the direct random-state sampler.
+        for seed in 0..200u64 {
+            let (state, sequence) = CubieCube::scramble_with_sequence(seed);
+            assert_eq!(state, CubieCube::scramble_from_seed(seed));
+            let mut c = CubieCube::SOLVED;
+            c.apply_all(&sequence);
+            assert_eq!(c, state, "seed {seed}: sequence did not reproduce the state");
+            assert!(!sequence.is_empty());
         }
     }
 

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="icon" href="data:," />
+    <title>Rubix — 3D Rubik's Cube</title>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Rubix</h1>
+        <div class="timer" id="timer">0.00</div>
+      </header>
+
+      <main>
+        <div class="stage">
+          <canvas id="scene"></canvas>
+        </div>
+
+        <aside id="panel">
+          <div class="panel-head">Moves <span id="count">(0)</span></div>
+          <div id="movelist" aria-live="polite"></div>
+          <div class="meta">
+            <div class="row"><span class="label">Scramble</span><code id="scramble">—</code></div>
+            <div class="row" id="solutionWrap" hidden>
+              <span class="label">Solution</span><code id="solution"></code>
+            </div>
+            <div class="row" id="hintWrap" hidden>
+              <span class="label">Hint</span><code id="hint"></code>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <div id="controls">
+        <button data-act="scramble">New Scramble</button>
+        <button data-act="reset">Reset</button>
+        <button data-act="undo" title="Undo (Backspace)">Undo</button>
+        <button data-act="redo">Redo</button>
+        <span class="spacer"></span>
+        <button data-act="hint">Hint</button>
+        <button data-act="solve" class="primary">Solve</button>
+        <button data-act="legend" class="icon" title="Keyboard help" aria-label="Keyboard help">⌨</button>
+      </div>
+    </div>
+
+    <div id="overlay" hidden>
+      <div class="card">
+        <h2>Complete!</h2>
+        <p id="overlayStats"></p>
+        <small>click anywhere or press Esc</small>
+      </div>
+    </div>
+
+    <div id="legend" hidden>
+      <div class="card">
+        <h2>Keyboard</h2>
+        <p>Press a face letter to turn it clockwise; hold <kbd>Shift</kbd> for counter-clockwise.</p>
+        <ul>
+          <li><kbd>U</kbd> Up</li>
+          <li><kbd>D</kbd> Down</li>
+          <li><kbd>L</kbd> Left</li>
+          <li><kbd>R</kbd> Right</li>
+          <li><kbd>F</kbd> Front</li>
+          <li><kbd>B</kbd> Back</li>
+        </ul>
+        <p class="muted">Drag a face to twist it, or drag the background to rotate the view.</p>
+        <small>click anywhere or press Esc</small>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

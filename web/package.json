@@ -1,0 +1,22 @@
+{
+  "name": "rubix-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Rubix frontend: Three.js 3D cube driven by the cube-core wasm engine",
+  "scripts": {
+    "build:wasm": "cargo build -p cube-wasm --target wasm32-unknown-unknown --release && wasm-bindgen ../target/wasm32-unknown-unknown/release/cube_wasm.wasm --out-dir src/pkg --target web",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.169.0",
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0"
+  }
+}
